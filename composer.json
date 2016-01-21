@@ -1,0 +1,19 @@
+{
+  "name": "pascal08/StringCalculator",
+  "description": "",
+  "license": "",
+  "authors": [
+    {
+      "name": "Pascal Lubbers",
+      "email": "pascallubbers8@hotmail.com"
+    }
+  ],
+  "require": {
+  "phpspec/phpspec": "^2.4"
+  },
+  "autoload": {
+    "psr-0": {
+      "": "src"
+    }
+  }
+}
