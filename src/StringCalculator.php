@@ -34,64 +34,15 @@ class StringCalculator
     protected $negativeNumbersAllowed = false;
 
     /**
-     * @return $this
-     */
-    public function allowNegativeNumbers()
-    {
-        $this->negativeNumbersAllowed = true;
-
-        return $this;
-    }
-
-    /**
-     * @param array|string $asDelimiters
-     * @return $this
-     */
-    public function withDelimiters($asDelimiters = [','])
-    {
-        $this->setDelimiters($asDelimiters);
-
-        return $this;
-    }
-
-    /**
      * @param        $sNumbers
      * @return number
      * @internal param string $sDelimiters
      */
     public function sum($sNumbers)
     {
-        return $this
-            ->prepareIntegers($sNumbers)
-            ->calculateSum();
-    }
+        $this->prepareIntegers($sNumbers);
 
-    /**
-     * @return number
-     */
-    protected function calculateSum()
-    {
-        return $this->sum = array_sum($this->numbers);
-    }
-
-    /**
-     * @param        $sNumbers
-     * @return number
-     * @internal param string $sDelimiters
-     */
-    public function product($sNumbers)
-    {
-        return $this
-            ->prepareIntegers($sNumbers)
-            ->calculateProduct();
-    }
-
-    /**
-     * @return number
-     */
-    protected function calculateProduct()
-    {
-        return $this->product = array_product($this->numbers);
+        return $this->calculateSum();
     }
 
     /**
@@ -104,10 +55,11 @@ class StringCalculator
     {
         $this->setNumbers($sNumbers);
 
-        return $this
-            ->extractFromString()
-            ->convertToIntegers()
-            ->filterIntegers();
+        $this->extractNumbersFromString();
+
+        $this->convertToIntegers();
+
+        $this->filterIntegers();
     }
 
     /**
@@ -126,7 +78,7 @@ class StringCalculator
      * @return $this
      * @throws Exception
      */
-    protected function extractFromString()
+    protected function extractNumbersFromString()
     {
         $pattern = '/[' . preg_quote(implode($this->delimiters), '/') . ']/';
 
@@ -135,8 +87,6 @@ class StringCalculator
         } catch (Exception $e) {
             throw new \Exception($e->getMessage());
         }
-
-        return $this;
     }
 
     /**
@@ -145,8 +95,6 @@ class StringCalculator
     protected function convertToIntegers()
     {
         $this->numbers = array_map('intval', $this->numbers);
-
-        return $this;
     }
 
     /**
@@ -161,14 +109,48 @@ class StringCalculator
 
             return ($number < self::MAX_NUMBER_ALLOWED);
         });
+    }
 
-        return $this;
+    /**
+     * @return number
+     */
+    protected function calculateSum()
+    {
+        return $this->sum = array_sum($this->numbers);
+    }
+
+    /**
+     * @return $this
+     */
+    public function allowNegativeNumbers()
+    {
+        $this->negativeNumbersAllowed = true;
+    }
+
+    /**
+     * @param        $sNumbers
+     * @return number
+     * @internal param string $sDelimiters
+     */
+    public function product($sNumbers)
+    {
+        $this->prepareIntegers($sNumbers);
+
+        return $this->calculateProduct();
+    }
+
+    /**
+     * @return number
+     */
+    protected function calculateProduct()
+    {
+        return $this->product = array_product($this->numbers);
     }
 
     /**
      * @param $asDelimiters
      */
-    protected function setDelimiters($asDelimiters)
+    public function setDelimiters($asDelimiters)
     {
         if (!is_array($asDelimiters) && !is_string($asDelimiters)) {
             throw new \InvalidArgumentException();
