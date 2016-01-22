@@ -24,47 +24,88 @@ class StringCalculator
     protected $product = 0;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $delimiters = ',';
+    protected $delimiters = [','];
+
+    /**
+     * @var bool
+     */
+    protected $negativeNumbersAllowed = false;
+
+    /**
+     * @return $this
+     */
+    public function allowNegativeNumbers()
+    {
+        $this->negativeNumbersAllowed = true;
+
+        return $this;
+    }
+
+    /**
+     * @param array|string $asDelimiters
+     * @return $this
+     */
+    public function withDelimiters($asDelimiters = [','])
+    {
+        $this->setDelimiters($asDelimiters);
+
+        return $this;
+    }
 
     /**
      * @param        $sNumbers
-     * @param string $sDelimiters
      * @return number
+     * @internal param string $sDelimiters
      */
-    public function sum($sNumbers, $sDelimiters = ',')
+    public function sum($sNumbers)
     {
         return $this
-            ->prepareIntegers($sNumbers, $sDelimiters)
+            ->prepareIntegers($sNumbers)
             ->calculateSum();
     }
 
     /**
-     * @param        $sNumbers
-     * @param string $sDelimiters
      * @return number
      */
-    public function product($sNumbers, $sDelimiters = ',')
+    protected function calculateSum()
+    {
+        return $this->sum = array_sum($this->numbers);
+    }
+
+    /**
+     * @param        $sNumbers
+     * @return number
+     * @internal param string $sDelimiters
+     */
+    public function product($sNumbers)
     {
         return $this
-            ->prepareIntegers($sNumbers, $sDelimiters)
+            ->prepareIntegers($sNumbers)
             ->calculateProduct();
     }
 
     /**
+     * @return number
+     */
+    protected function calculateProduct()
+    {
+        return $this->product = array_product($this->numbers);
+    }
+
+    /**
      * @param $sNumbers
-     * @param $sDelimiters
      * @return $this
      * @throws Exception
+     * @internal param $sDelimiters
      */
-    protected function prepareIntegers($sNumbers, $sDelimiters)
+    protected function prepareIntegers($sNumbers)
     {
         $this->setNumbers($sNumbers);
-        $this->setDelimiters($sDelimiters);
 
-        return $t = $this
-            ->extract()
+        return $this
+            ->extractFromString()
             ->convertToIntegers()
             ->filterIntegers();
     }
@@ -82,33 +123,18 @@ class StringCalculator
     }
 
     /**
-     * @param $sDelimiters
-     */
-    protected function setDelimiters($sDelimiters)
-    {
-        if (empty($sDelimiters)) {
-            return;
-        }
-
-        if (!is_string($sDelimiters)) {
-            throw new \InvalidArgumentException();
-        }
-
-        $this->delimiters = $sDelimiters;
-    }
-
-    /**
      * @return $this
+     * @throws Exception
      */
-    protected function filterIntegers()
+    protected function extractFromString()
     {
-        $this->numbers = array_filter($this->numbers, function ($number) {
-            if ($number < 0) {
-                throw new \InvalidArgumentException('Invalid number provided: ' . $number);
-            }
+        $pattern = '/[' . preg_quote(implode($this->delimiters), '/') . ']/';
 
-            return ($number < self::MAX_NUMBER_ALLOWED);
-        });
+        try {
+            $this->numbers = preg_split($pattern, $this->numbers);
+        } catch (Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
 
         return $this;
     }
@@ -125,34 +151,29 @@ class StringCalculator
 
     /**
      * @return $this
-     * @throws Exception
      */
-    protected function extract()
+    protected function filterIntegers()
     {
-        $pattern = '/[' . preg_quote($this->delimiters, '/') . ']/';
+        $this->numbers = array_filter($this->numbers, function ($number) {
+            if (!$this->negativeNumbersAllowed && $number < 0) {
+                throw new \InvalidArgumentException('Invalid number provided: ' . $number);
+            }
 
-        try {
-            $this->numbers = preg_split($pattern, $this->numbers);
-        } catch (Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+            return ($number < self::MAX_NUMBER_ALLOWED);
+        });
 
         return $this;
     }
 
     /**
-     * @return number
+     * @param $asDelimiters
      */
-    protected function calculateSum()
+    protected function setDelimiters($asDelimiters)
     {
-        return $this->sum = array_sum($this->numbers);
-    }
+        if (!is_array($asDelimiters) && !is_string($asDelimiters)) {
+            throw new \InvalidArgumentException();
+        }
 
-    /**
-     * @return number
-     */
-    protected function calculateProduct()
-    {
-        return $this->product = array_product($this->numbers);
+        $this->delimiters = (array)$asDelimiters;
     }
 }

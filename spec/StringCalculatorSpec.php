@@ -27,24 +27,29 @@ class StringCalculatorSpec extends ObjectBehavior
         $this->sum('1,2,3,1000')->shouldReturn(6);
     }
 
-    function it_disallows_negative_numbers()
+    function it_disallows_negative_numbers_by_default()
     {
         $this->shouldThrow('\InvalidArgumentException')->during('sum', ['1,2,3,-1']);
     }
 
+    function it_allows_negative_numbers_on_request()
+    {
+        $this->allowNegativeNumbers()->sum('1,2,3,4,-1')->shouldReturn(9);
+    }
+
     function it_allows_custom_delimiters()
     {
-        $this->sum('1/2/3/4', '/')->shouldReturn(10);
+        $this->withDelimiters('/')->sum('1/2/3/4')->shouldReturn(10);
     }
 
     function it_allows_multiple_delimiters()
     {
-        $this->sum('1,2,3/4', '/,')->shouldReturn(10);
+        $this->withDelimiters(['/', ','])->sum('1,2,3/4')->shouldReturn(10);
     }
 
     function it_allows_newline_as_a_delimiter()
     {
-        $this->sum('1\n2\n3\n4', '\n')->shouldReturn(10);
+        $this->withDelimiters('\n')->sum('1\n2\n3\n4')->shouldReturn(10);
     }
 
     function it_ignores_non_integers()
