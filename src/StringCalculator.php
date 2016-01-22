@@ -34,9 +34,8 @@ class StringCalculator
     protected $negativeNumbersAllowed = false;
 
     /**
-     * @param        $sNumbers
+     * @param $sNumbers
      * @return number
-     * @internal param string $sDelimiters
      */
     public function sum($sNumbers)
     {
@@ -47,9 +46,7 @@ class StringCalculator
 
     /**
      * @param $sNumbers
-     * @return $this
      * @throws Exception
-     * @internal param $sDelimiters
      */
     protected function prepareIntegers($sNumbers)
     {
@@ -75,7 +72,6 @@ class StringCalculator
     }
 
     /**
-     * @return $this
      * @throws Exception
      */
     protected function extractNumbersFromString()
@@ -90,7 +86,7 @@ class StringCalculator
     }
 
     /**
-     * @return $this
+     *
      */
     protected function convertToIntegers()
     {
@@ -98,7 +94,7 @@ class StringCalculator
     }
 
     /**
-     * @return $this
+     *
      */
     protected function filterIntegers()
     {
@@ -120,7 +116,7 @@ class StringCalculator
     }
 
     /**
-     * @return $this
+     *
      */
     public function allowNegativeNumbers()
     {
@@ -128,9 +124,8 @@ class StringCalculator
     }
 
     /**
-     * @param        $sNumbers
+     * @param $sNumbers
      * @return number
-     * @internal param string $sDelimiters
      */
     public function product($sNumbers)
     {
